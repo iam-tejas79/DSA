@@ -1,27 +1,34 @@
-import java.util.Arrays;
+import java.util.*;
 
 class Solution {
     public long maximumValueSum(int[] nums, int k, int[][] edges) {
-        long totalSum = 0;
-        int flipCount = 0;
-        int minChange = Integer.MAX_VALUE;
+        long total = 0;
+        long extra = 0;
+        int count = 0;
 
         for (int num : nums) {
-            int xorNum = num ^ k;
-            if (xorNum > num) {
-                totalSum += xorNum;
-                flipCount++;
-                minChange = Math.min(minChange, xorNum - num);
+            long xorVal = num ^ k;
+            // If XOR gives a better value, count it
+            if (xorVal > num) {
+                count++;
+                total += xorVal;
+                extra += (num - xorVal);
             } else {
-                totalSum += num;
-                minChange = Math.min(minChange, num - xorNum);
+                total += num;
+                extra += (xorVal - num);
             }
         }
 
-        if (flipCount % 2 == 0) {
-            return totalSum;
-        } else {
-            return totalSum - minChange;
+        // If count is odd, one XOR must be reverted (remove smallest difference)
+        if (count % 2 != 0) {
+            long minDiff = Long.MAX_VALUE;
+            for (int num : nums) {
+                long diff = Math.abs((long)(num ^ k) - num);
+                minDiff = Math.min(minDiff, diff);
+            }
+            total -= minDiff;
         }
+
+        return total;
     }
 }
